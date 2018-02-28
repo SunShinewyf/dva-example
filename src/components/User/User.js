@@ -1,15 +1,20 @@
 import React from "react";
-import { Table, Pagination, Icon, Divider } from "antd";
+import { Table, Pagination, Button, Popconfirm } from "antd";
+import { connect } from "dva";
+import UserModal from "./UserForm";
 import "antd/dist/antd.css";
 import styles from "./User.css";
 
-export default function User({
-  dispatch,
-  list: dataSource,
-  loading,
-  total,
-  page: current
-}) {
+function User({ dispatch, list: dataSource, loading, total, page: current }) {
+  console.log(dataSource, "888");
+
+  function createHandler(values) {
+    console.log(values,'8888')
+    dispatch({
+      type: "user/create",
+      payload: values
+    });
+  }
   const columns = [
     {
       title: "Name",
@@ -31,43 +36,27 @@ export default function User({
       title: "Action",
       key: "action",
       render: (text, record) => (
-        <span>
-        
-        </span>
+        <p>
+          <a onClick={() => {}}>编辑</a>
+          &nbsp;
+          <Popconfirm title="确定要删除吗？" onConfirm={() => {}}>
+            <a>删除</a>
+          </Popconfirm>
+        </p>
       )
-    }
-  ];
-  const data = [
-    {
-      key: "1",
-      name: "John Brown",
-      age: 32,
-      address: "New York No. 1 Lake Park"
-    },
-    {
-      key: "2",
-      name: "Jim Green",
-      age: 42,
-      address: "London No. 1 Lake Park"
-    },
-    {
-      key: "3",
-      name: "Joe Black",
-      age: 32,
-      address: "Sidney No. 1 Lake Park"
     }
   ];
   return (
     <div className={styles.normal}>
       <div>
-        {/* <div className={styles.create}>
-            <UserModal record={{}} onOk={createHandler}>
-              <Button type="primary">Create User</Button>
-            </UserModal>
-          </div> */}
+        <div className={styles.create}>
+          <UserModal record={{}} onOk={createHandler}>
+            <Button type="primary">Create User</Button>
+          </UserModal>
+        </div>
         <Table
           columns={columns}
-          dataSource={data}
+          dataSource={dataSource}
           loading={loading}
           rowKey={record => record.id}
           pagination={false}
@@ -82,3 +71,15 @@ export default function User({
     </div>
   );
 }
+
+function mapStateToProps(state) {
+  const { list, total, page } = state.user;
+  return {
+    loading: false,
+    list,
+    total,
+    page
+  };
+}
+
+export default connect(mapStateToProps)(User);
