@@ -1,5 +1,5 @@
-import { fetch, create, remove } from "../services/user";
-const queryString = require('query-string')
+import { fetch, create, remove, update } from "../services/user";
+const queryString = require("query-string");
 
 export default {
   namespace: "user",
@@ -14,7 +14,7 @@ export default {
   },
 
   effects: {
-    *fetch({ payload: { page } }, { select, call, put }) {
+    *fetch({ payload: { page = 1 } }, { select, call, put }) {
       yield put({ type: "showLoading" });
       const { data, headers } = yield call(fetch, { page });
       yield put({
@@ -28,12 +28,20 @@ export default {
     },
     *create({ payload: value }, { call, put }) {
       yield call(create, value);
+      yield put({ type: "reload" });
     },
-    *del({ payload: id }, { call, put }) {
+    *remove({ payload: id }, { call, put }) {
       yield call(remove, id);
       yield put({ type: "reload" });
     },
-    *update() {}
+    *update({ payload: { id, value } }, { call, put }) {
+      yield call(update, id, value);
+      yield put({ type: "reload" });
+    },
+    *reload(action, { put, select }) {
+      const page = yield select(state => state.user.page);
+      yield put({ type: "fetch", payload: { page } });
+    }
   },
   reducers: {
     showLoading(state, action) {
@@ -51,11 +59,11 @@ export default {
   subscriptions: {
     setup({ dispatch, history }) {
       return history.listen(({ pathname, search }) => {
-        const query = queryString.parse(history.location.search)
+        const query = queryString.parse(history.location.search);
         if (pathname === "/user") {
           dispatch({
             type: "fetch",
-            payload: query ? query : 1
+            payload: query
           });
         }
       });

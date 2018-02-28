@@ -66,7 +66,7 @@ function User({ dispatch, list: dataSource, loading, total, page: current }) {
           <Popconfirm
             title="确定要删除吗？"
             onConfirm={() => {
-              deleteHandler.bind(null, record.id);
+              deleteHandler(record.id);
             }}
           >
             <a>&nbsp;&nbsp;删除</a>
