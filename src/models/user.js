@@ -1,4 +1,4 @@
-import { fetch, create } from "../services/user";
+import { fetch, create, remove } from "../services/user";
 
 export default {
   namespace: "user",
@@ -31,7 +31,10 @@ export default {
     *create({ payload: value }, { call, put }) {
       yield call(create, value);
     },
-    *del() {},
+    *del({ payload: id }, { call, put }) {
+      yield call(remove, id);
+      yield put({ type: "reload" });
+    },
     *update() {}
   },
   reducers: {
@@ -57,7 +60,7 @@ export default {
         if (pathname === "/user") {
           dispatch({
             type: "fetch",
-            payload: query
+            payload: 1
           });
         }
       });

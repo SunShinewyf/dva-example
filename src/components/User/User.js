@@ -9,10 +9,17 @@ function User({ dispatch, list: dataSource, loading, total, page: current }) {
   console.log(dataSource, "888");
 
   function createHandler(values) {
-    console.log(values,'8888')
+    console.log(values, "8888");
     dispatch({
       type: "user/create",
       payload: values
+    });
+  }
+
+  function deleteHandler(id) {
+    dispatch({
+      type: "users/remove",
+      payload: id
     });
   }
   const columns = [
@@ -37,9 +44,12 @@ function User({ dispatch, list: dataSource, loading, total, page: current }) {
       key: "action",
       render: (text, record) => (
         <p>
-          <a onClick={() => {}}>编辑</a>
-          &nbsp;
-          <Popconfirm title="确定要删除吗？" onConfirm={() => {}}>
+          <Popconfirm
+            title="确定要删除吗？"
+            onConfirm={() => {
+              deleteHandler.bind(null, record.id);
+            }}
+          >
             <a>删除</a>
           </Popconfirm>
         </p>
