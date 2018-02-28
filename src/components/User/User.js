@@ -2,24 +2,40 @@ import React from "react";
 import { Table, Pagination, Button, Popconfirm } from "antd";
 import { connect } from "dva";
 import UserModal from "./UserForm";
+import { routerRedux } from "dva/router";
 import "antd/dist/antd.css";
 import styles from "./User.css";
 
 function User({ dispatch, list: dataSource, loading, total, page: current }) {
-  console.log(dataSource, "888");
-
+  //添加人员
   function createHandler(values) {
-    console.log(values, "8888");
     dispatch({
       type: "user/create",
       payload: values
     });
   }
-
+  //删除人员
   function deleteHandler(id) {
     dispatch({
-      type: "users/remove",
+      type: "user/remove",
       payload: id
+    });
+  }
+  //翻页时的处理
+  function pageChangeHandle(page) {
+    dispatch(
+      routerRedux.push({
+        pathname: "/user",
+        search: "?page=" + page
+      })
+    );
+  }
+
+  //更新人员信息
+  function editHandler(id, values) {
+    dispatch({
+      type: "user/update",
+      payload: { id, values }
     });
   }
   const columns = [
@@ -30,27 +46,30 @@ function User({ dispatch, list: dataSource, loading, total, page: current }) {
       render: text => text
     },
     {
-      title: "Age",
-      dataIndex: "age",
-      key: "age"
+      title: "Phone",
+      dataIndex: "phone",
+      key: "phone"
     },
     {
-      title: "Address",
-      dataIndex: "address",
-      key: "address"
+      title: "Email",
+      dataIndex: "email",
+      key: "email"
     },
     {
       title: "Action",
       key: "action",
       render: (text, record) => (
         <p>
+          <UserModal record={record} onOk={editHandler.bind(null, record.id)}>
+            <a>编辑</a>
+          </UserModal>
           <Popconfirm
             title="确定要删除吗？"
             onConfirm={() => {
               deleteHandler.bind(null, record.id);
             }}
           >
-            <a>删除</a>
+            <a>&nbsp;&nbsp;删除</a>
           </Popconfirm>
         </p>
       )
@@ -73,9 +92,10 @@ function User({ dispatch, list: dataSource, loading, total, page: current }) {
         />
         <Pagination
           className="ant-table-pagination"
-          total={5}
-          current={0}
-          pageSize={2}
+          total={total}
+          current={current}
+          pageSize={5}
+          onChange={pageChangeHandle}
         />
       </div>
     </div>

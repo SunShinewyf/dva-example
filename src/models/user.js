@@ -1,4 +1,5 @@
 import { fetch, create, remove } from "../services/user";
+const queryString = require('query-string')
 
 export default {
   namespace: "user",
@@ -13,20 +14,17 @@ export default {
   },
 
   effects: {
-    *query({ payload: { page = 1 } }, { select, call, put }) {
+    *fetch({ payload: { page } }, { select, call, put }) {
       yield put({ type: "showLoading" });
       const { data, headers } = yield call(fetch, { page });
-      console.log(data, "99999");
-      if (data) {
-        yield put({
-          type: "save",
-          payload: {
-            list: data.data,
-            total: parseInt(headers["x-total-count"], 10),
-            page: parseInt(page, 10)
-          }
-        });
-      }
+      yield put({
+        type: "save",
+        payload: {
+          list: data,
+          total: parseInt(headers["x-total-count"], 10),
+          page: parseInt(page, 10)
+        }
+      });
     },
     *create({ payload: value }, { call, put }) {
       yield call(create, value);
@@ -43,24 +41,21 @@ export default {
     },
     showModal() {},
     hideModal() {},
-    querySuccess(state, action) {
-      return { ...state, ...action.payload, loading: false };
-    },
     createSuccess() {},
     deleteSuccess() {},
     updateSuccess() {},
-    save(state, { payload: { data: list, total, page } }) {
+    save(state, { payload: { list, total, page } }) {
       return { ...state, list, total, page };
     }
   },
   subscriptions: {
     setup({ dispatch, history }) {
-      return history.listen(({ pathname, query }) => {
-        console.log(pathname, query, "iiii");
+      return history.listen(({ pathname, search }) => {
+        const query = queryString.parse(history.location.search)
         if (pathname === "/user") {
           dispatch({
             type: "fetch",
-            payload: 1
+            payload: query ? query : 1
           });
         }
       });

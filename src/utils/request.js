@@ -19,7 +19,6 @@ function checkStatus(response) {
  */
 export default async function request(url, options) {
   const response = await fetch(url, options);
-  console.log(response,'8888')
   checkStatus(response);
 
   const data = await response.json();
