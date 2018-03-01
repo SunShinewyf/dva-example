@@ -15,7 +15,6 @@ export default {
 
   effects: {
     *fetch({ payload: { page = 1 } }, { select, call, put }) {
-      yield put({ type: "showLoading" });
       const { data, headers } = yield call(fetch, { page });
       yield put({
         type: "save",
@@ -44,14 +43,6 @@ export default {
     }
   },
   reducers: {
-    showLoading(state, action) {
-      return { ...state, loading: true };
-    },
-    showModal() {},
-    hideModal() {},
-    createSuccess() {},
-    deleteSuccess() {},
-    updateSuccess() {},
     save(state, { payload: { list, total, page } }) {
       return { ...state, list, total, page };
     }
