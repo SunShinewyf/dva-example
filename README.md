@@ -1,5 +1,5 @@
 ## Description 
-the simple demo of dva
+the simple demo of dva and antd
 
 ## Install
 > npm install
