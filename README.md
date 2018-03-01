@@ -1,7 +1,7 @@
-## description 
+## Description 
 the simple demo of dva
 
-## installation
+## Install
 > npm install
 
 ## Run
